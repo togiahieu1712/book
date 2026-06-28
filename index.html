@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cây Sinh Tiền — Quiz Tình Huống</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --forest-deep: #14271f;
+        --forest: #1f3b2d;
+        --forest-light: #2c5240;
+        --gold: #d8b15c;
+        --gold-dim: #a98a45;
+        --cream: #f3ecd9;
+        --cream-dim: #cfc6ae;
+        --terracotta: #c1543c;
+        --sage: #7fae87;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: radial-gradient(
+          circle at 50% -10%,
+          #25462f 0%,
+          var(--forest-deep) 55%,
+          #0e1c15 100%
+        );
+        color: var(--cream);
+        font-family: "Inter", sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 28px 16px 60px;
+      }
+      .wrap {
+        width: 100%;
+        max-width: 440px;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 6px;
+      }
+      .eyebrow {
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold-dim);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      h1 {
+        font-family: "Lora", serif;
+        font-weight: 700;
+        font-size: 30px;
+        margin: 0 0 4px;
+        color: var(--cream);
+        letter-spacing: 0.01em;
+      }
+      .subtitle {
+        font-size: 13.5px;
+        color: var(--cream-dim);
+        margin: 0 0 18px;
+        line-height: 1.5;
+      }
+
+      /* --- Tree --- */
+      .tree-card {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.03),
+          rgba(255, 255, 255, 0)
+        );
+        border: 1px solid rgba(216, 177, 92, 0.18);
+        border-radius: 18px;
+        padding: 14px 10px 8px;
+        margin-bottom: 18px;
+        position: relative;
+      }
+      .tree-score {
+        position: absolute;
+        top: 14px;
+        right: 18px;
+        font-family: "Lora", serif;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--gold);
+        background: rgba(0, 0, 0, 0.18);
+        padding: 4px 10px;
+        border-radius: 20px;
+        border: 1px solid rgba(216, 177, 92, 0.25);
+      }
+      svg#treeSvg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .coin {
+        transition:
+          opacity 0.5s ease,
+          transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .leaf {
+        transition: opacity 0.6s ease;
+      }
+
+      /* --- Progress --- */
+      .progress-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .progress-track {
+        flex: 1;
+        height: 6px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+        width: 0%;
+        transition: width 0.4s ease;
+      }
+      .progress-label {
+        font-size: 12px;
+        color: var(--cream-dim);
+        min-width: 48px;
+        text-align: right;
+        font-weight: 600;
+      }
+
+      /* --- Question card --- */
+      .card {
+        background: var(--forest);
+        border: 1px solid rgba(216, 177, 92, 0.14);
+        border-radius: 20px;
+        padding: 22px 20px 18px;
+        box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.6);
+      }
+      .qnum {
+        font-family: "Lora", serif;
+        font-style: italic;
+        color: var(--gold-dim);
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
+      .situation {
+        font-size: 15.5px;
+        line-height: 1.6;
+        color: var(--cream);
+        margin-bottom: 18px;
+      }
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .opt {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--cream);
+        border-radius: 12px;
+        padding: 13px 14px;
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        text-align: left;
+        cursor: pointer;
+        transition:
+          background 0.2s,
+          border-color 0.2s,
+          transform 0.1s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .opt:active {
+        transform: scale(0.99);
+      }
+      .opt:not(:disabled):hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(216, 177, 92, 0.3);
+      }
+      .opt .letter {
+        flex: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba(216, 177, 92, 0.15);
+        color: var(--gold);
+        font-size: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .opt.correct {
+        background: rgba(127, 174, 135, 0.18);
+        border-color: var(--sage);
+      }
+      .opt.correct .letter {
+        background: var(--sage);
+        color: #0e1c15;
+      }
+      .opt.wrong {
+        background: rgba(193, 84, 60, 0.16);
+        border-color: var(--terracotta);
+      }
+      .opt.wrong .letter {
+        background: var(--terracotta);
+        color: #fff;
+      }
+      .opt:disabled {
+        cursor: default;
+      }
+      .opt:disabled:not(.correct):not(.wrong) {
+        opacity: 0.45;
+      }
+
+      .feedback {
+        margin-top: 14px;
+        font-size: 13.5px;
+        line-height: 1.55;
+        padding: 12px 14px;
+        border-radius: 12px;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.good {
+        background: rgba(127, 174, 135, 0.12);
+        border: 1px solid rgba(127, 174, 135, 0.3);
+        color: #cfe8d2;
+      }
+      .feedback.bad {
+        background: rgba(193, 84, 60, 0.12);
+        border: 1px solid rgba(193, 84, 60, 0.3);
+        color: #f1d3cb;
+      }
+
+      .nextBtn {
+        margin-top: 16px;
+        width: 100%;
+        padding: 13px;
+        border: none;
+        border-radius: 12px;
+        background: var(--gold);
+        color: #1b2e22;
+        font-weight: 700;
+        font-size: 14.5px;
+        font-family: "Inter", sans-serif;
+        cursor: pointer;
+        display: none;
+      }
+      .nextBtn.show {
+        display: block;
+      }
+      .nextBtn:active {
+        transform: scale(0.99);
+      }
+
+      /* --- Result screen --- */
+      .result {
+        display: none;
+        text-align: center;
+        padding: 10px 4px 4px;
+      }
+      .result.show {
+        display: block;
+      }
+      .result-score {
+        font-family: "Lora", serif;
+        font-weight: 700;
+        font-size: 46px;
+        color: var(--gold);
+        margin: 6px 0 2px;
+      }
+      .result-tier {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--cream);
+        margin-bottom: 10px;
+      }
+      .result-desc {
+        font-size: 13.5px;
+        color: var(--cream-dim);
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+      .restartBtn {
+        padding: 12px 22px;
+        border: 1px solid rgba(216, 177, 92, 0.4);
+        border-radius: 12px;
+        background: transparent;
+        color: var(--gold);
+        font-weight: 600;
+        font-size: 14px;
+        font-family: "Inter", sans-serif;
+        cursor: pointer;
+      }
+      .fortune-card {
+        margin: 18px 0;
+        padding: 18px 16px;
+        border-radius: 16px;
+        background: linear-gradient(
+          160deg,
+          rgba(216, 177, 92, 0.14),
+          rgba(216, 177, 92, 0.04)
+        );
+        border: 1px solid rgba(216, 177, 92, 0.35);
+        box-shadow: 0 0 0 1px rgba(216, 177, 92, 0.06) inset;
+      }
+      .fortune-label {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--gold-dim);
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .fortune-amount {
+        font-family: "Lora", serif;
+        font-weight: 700;
+        font-size: 34px;
+        color: var(--gold);
+        margin-bottom: 4px;
+      }
+      .fortune-sub {
+        font-size: 12.5px;
+        color: var(--cream-dim);
+        margin-bottom: 8px;
+        line-height: 1.4;
+      }
+      .fortune-note {
+        font-size: 12px;
+        color: var(--cream-dim);
+        opacity: 0.75;
+        font-style: italic;
+        line-height: 1.5;
+      }
+      .quizArea {
+        display: block;
+      }
+      .quizArea.hide {
+        display: none;
+      }
+      footer {
+        text-align: center;
+        font-size: 11.5px;
+        color: var(--cream-dim);
+        opacity: 0.6;
+        margin-top: 22px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="eyebrow">Nghề Tay Trái Hái Ra Tiền</div>
+        <h1>Cây Sinh Tiền</h1>
+        <p class="subtitle">
+          20 tình huống thật trong sách. Mỗi câu là một vấn đề nhân vật từng
+          gặp, bốn phương án là bốn cách xử lý khác nhau — hãy chọn đúng cách mà
+          nhân vật đã làm.
+        </p>
+      </header>
+
+      <div class="tree-card">
+        <div class="tree-score" id="treeScore">0/20</div>
+        <svg
+          id="treeSvg"
+          viewBox="0 0 300 200"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <!-- ground -->
+          <ellipse
+            cx="150"
+            cy="188"
+            rx="90"
+            ry="8"
+            fill="#0e1c15"
+            opacity="0.5"
+          />
+          <!-- trunk -->
+          <path
+            d="M150 188 C148 150 145 130 150 100 C155 70 145 50 150 30"
+            stroke="#5a4631"
+            stroke-width="9"
+            fill="none"
+            stroke-linecap="round"
+          />
+          <!-- branches -->
+          <path
+            d="M150 100 C130 90 110 78 95 60"
+            stroke="#5a4631"
+            stroke-width="5"
+            fill="none"
+            stroke-linecap="round"
+          />
+          <path
+            d="M150 95 C172 84 192 70 208 52"
+            stroke="#5a4631"
+            stroke-width="5"
+            fill="none"
+            stroke-linecap="round"
+          />
+          <path
+            d="M150 60 C135 48 122 38 108 24"
+            stroke="#5a4631"
+            stroke-width="4"
+            fill="none"
+            stroke-linecap="round"
+          />
+          <path
+            d="M150 58 C166 46 180 36 196 24"
+            stroke="#5a4631"
+            stroke-width="4"
+            fill="none"
+            stroke-linecap="round"
+          />
+          <path
+            d="M150 30 C150 18 150 10 150 4"
+            stroke="#5a4631"
+            stroke-width="4"
+            fill="none"
+            stroke-linecap="round"
+          />
+          <!-- leaves (muted, base foliage) -->
+          <g id="leafGroup" fill="#3f6b50" opacity="0.85"></g>
+          <!-- coins (revealed on correct answers) -->
+          <g id="coinGroup"></g>
+        </svg>
+      </div>
+
+      <div class="quizArea" id="quizArea">
+        <div class="progress-row">
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-label" id="progressLabel">1/20</div>
+        </div>
+
+        <div class="card">
+          <div class="qnum" id="qnum">Tình huống 1</div>
+          <div class="situation" id="situation"></div>
+          <div class="options" id="options"></div>
+          <div class="feedback" id="feedback"></div>
+          <button class="nextBtn" id="nextBtn">Câu tiếp theo →</button>
+        </div>
+      </div>
+
+      <div class="result" id="result">
+        <div class="result-score" id="resultScore">0/20</div>
+        <div class="result-tier" id="resultTier"></div>
+        <div class="result-desc" id="resultDesc"></div>
+
+        <div class="fortune-card" id="fortuneCard">
+          <div class="fortune-label">🔮 Tiên đoán cây sinh tiền</div>
+          <div class="fortune-amount" id="fortuneAmount">0 tỉ</div>
+          <div class="fortune-sub">
+            là số tiền nghề tay trái tương lai có thể mang về cho bạn
+          </div>
+          <div class="fortune-note" id="fortuneNote"></div>
+        </div>
+
+        <button class="restartBtn" id="restartBtn">Làm lại từ đầu</button>
+      </div>
+
+      <footer>
+        Dựa trên các ví dụ thực tế trong "Nghề Tay Trái Hái Ra Tiền" — Chris
+        Guillebeau
+      </footer>
+    </div>
+
+    <script>
+      const questions = [
+        {
+          situation:
+            'Tanner Callais đi nghỉ trên du thuyền nhưng không tìm được thông tin thực tế nào trên mạng — chỉ có trang quảng cáo của hãng tàu hoặc diễn đàn với hàng nghìn ý kiến trái chiều. Là người viết nội dung chuyên nghiệp, anh đã xử lý "khoảng trống thông tin" này như thế nào?',
+          options: [
+            "Liên hệ hãng tàu để xin tài liệu chính thức rồi đăng lại lên một trang mới",
+            'Viết blog trả lời từng câu hỏi cụ thể mà du khách hay thắc mắc (như "có xem được Netflix trên tàu không?"), tối ưu SEO để lên top Google, rồi kiếm tiền qua quảng cáo và liên kết tiếp thị',
+            "Mở một diễn đàn mới để du khách tự trao đổi kinh nghiệm với nhau",
+            "Quay một video YouTube tổng hợp đánh giá toàn bộ chuyến đi",
+          ],
+          correct: 1,
+          note: "Tanner xây trang trả lời các câu hỏi nhỏ, ít người giải đáp kỹ — rồi tối ưu SEO, không tốn một xu marketing.",
+        },
+        {
+          situation:
+            'Andrea Hajal mở tài khoản "Airbnb cho chó" trên Rover.com và nhận khách đầu tiên chỉ trong một tuần. Nhưng giữa rất nhiều người trông chó khác trên nền tảng, cô đã làm gì để liên tục dẫn đầu khu vực của mình?',
+          options: [
+            "Giảm giá thấp hơn tất cả các đối thủ trong vùng",
+            "Đăng thật nhiều ảnh, trả lời mọi câu hỏi nhanh nhất có thể, và bổ sung thêm các dịch vụ như thăm đột xuất, dắt chó đi dạo",
+            "Chỉ nhận khách quen để tránh rủi ro với người lạ",
+            "Thuê thêm người trông chó để mở rộng quy mô ngay từ đầu",
+          ],
+          correct: 1,
+          note: "Sự chăm chút chi tiết (ảnh, phản hồi nhanh, dịch vụ mở rộng) giúp thuật toán và khách hàng đều ưu ái Andrea.",
+        },
+        {
+          situation:
+            "Vấn đề của Sarah Hannington: cô quá phụ thuộc vào một nhà sản xuất kẹo không đáng tin cậy, và chiếc máy làm kẹo đầu tiên (đặt từ một nhà cung cấp Trung Quốc) khi giao đến lại không hoạt động — ngay trước mùa Valentine. Cô đã xử lý ra sao?",
+          options: [
+            "Tăng giá kẹo để bù vào rủi ro phụ thuộc nhà sản xuất",
+            "Tạm ngừng nhận đơn hàng cho đến khi tìm được giải pháp chắc chắn hơn",
+            "Đầu tư toàn bộ doanh thu của cả mùa để mua một chiếc máy mới — lần này tìm được nơi thực sự cam kết và giao đúng hẹn",
+            "Outsource toàn bộ việc sản xuất cho một xưởng kẹo khác ở nước ngoài",
+          ],
+          correct: 2,
+          note: "Sarah dồn hết doanh thu mùa đó vào một chiếc máy mới — một canh bạc lớn nhưng có cơ sở, vì cô đã kiểm chứng được nhu cầu.",
+        },
+        {
+          situation:
+            "Joe Maiellano và Jack từng mơ mở một xưởng chưng cất rượu gin, nhưng phát hiện chi phí lên tới 1–3 triệu đô-la cùng vô số rào cản pháp lý từ các cấp chính quyền. Họ đã xoay chuyển ý tưởng này thế nào?",
+          options: [
+            "Vay vốn ngân hàng để theo đuổi giấc mơ xưởng rượu đến cùng",
+            "Hợp tác với một xưởng rượu lớn đã có sẵn giấy phép để chia lợi nhuận",
+            "Chuyển sang bán bộ dụng cụ để khách tự làm rượu gin tại nhà — vốn đầu tư thấp hơn nhiều và không cần giấy phép bán rượu",
+            "Bỏ hẳn ý tưởng kinh doanh liên quan đến rượu, chuyển sang lĩnh vực khác",
+          ],
+          correct: 2,
+          note: "Từ 250 bộ dụng cụ đầu tiên làm trong căn hộ của Joe, họ bán được 75.000 bộ trong bốn năm.",
+        },
+        {
+          situation:
+            'Jake Posko nhận ra thị trường dạy guitar đã quá chật chội — vô số người dạy với mức giá và chất lượng khác nhau, và quảng cáo "Nhận dạy đàn guitar" thông thường chẳng gây được chú ý. Anh đã làm gì để nổi bật?',
+          options: [
+            "Định giá thấp nhất thị trường để thu hút học viên",
+            'Dùng tiêu đề quảng cáo tự tin, phóng đại — "Khóa học guitar đỉnh nhất quả đất" — thay cho tiêu đề thông thường',
+            "Chỉ quảng cáo qua truyền miệng giữa người quen, không đăng công khai",
+            "Hợp tác với một nhạc sĩ có tiếng để làm đại diện cho khóa học",
+          ],
+          correct: 1,
+          note: "Ngôn ngữ quảng cáo táo bạo giúp mẩu tin của Jake trên Craigslist khác biệt hẳn so với phần còn lại.",
+        },
+        {
+          situation:
+            "Khi sếp của Andrew Church yêu cầu anh chuyển công tác đến Chicago — một thay đổi anh không muốn nhưng cũng ngại từ chối — điều gì đã giúp anh đủ tự tin để xử lý tình huống này theo ý mình?",
+          options: [
+            "Anh đồng ý chuyển ngay vì sợ mất việc chính",
+            "Anh xin nghỉ việc ngay lập tức để toàn tâm với việc khắc đá trên Etsy",
+            "Nhờ thu nhập ổn định từ dự án bán biển khắc đá hình Pennsylvania trên Etsy, anh đến gặp sếp và từ chối thẳng yêu cầu chuyển công tác",
+            "Anh yêu cầu công ty tăng lương để bù đắp chi phí chuyển nhà",
+          ],
+          correct: 2,
+          note: '"Không có công việc làm thêm, tôi sẽ không đủ tự tin để đưa ra một quyết định như vậy" — Andrew Church.',
+        },
+        {
+          situation:
+            'Sau hơn một năm thử nhiều hướng với dịch vụ làm hồ sơ xin việc (Fiverr, rồi một trang web riêng tên Résumé Redesign) mà vẫn không thực sự "cất cánh", Tim Aton nhận ra điều gì và thay đổi cách làm ra sao?',
+          options: [
+            "Quay lại làm hồ sơ tùy chỉnh cho từng khách với mức giá cao hơn nhiều",
+            "Nhận ra mình không muốn làm thiết kế riêng cho từng khách — mà muốn bán các mẫu có sẵn — nên tạo ra 16 mẫu thiết kế (Foundry Resumes) để khách tự tùy chỉnh",
+            "Đóng hẳn dự án để tập trung toàn thời gian cho việc học",
+            "Thuê một nhóm thiết kế làm hồ sơ theo yêu cầu thay anh",
+          ],
+          correct: 1,
+          note: 'Chuyển từ "bán dịch vụ từng đơn" sang "bán sản phẩm mẫu có sẵn" giúp dự án tiếp tục sinh lời thụ động mà không cần Tim trực tiếp tham gia.',
+        },
+        {
+          situation:
+            "Sau khi bán lại nhà hàng của mình, Julie Wilder cần một hướng đi mới hoàn toàn để vừa đảm bảo tài chính, vừa tìm chỗ đứng riêng trong giai đoạn chuyển đổi cuộc sống. Cô đã chọn làm gì?",
+          options: [
+            "Mở một nhà hàng mới tương tự nhà hàng cũ",
+            "Nghỉ hưu hoàn toàn, không bắt đầu dự án nào nữa",
+            "Phát triển một dự án lịch chiêm tinh, đặt cược vào một lĩnh vực hoàn toàn mới với mình",
+            "Quay lại làm quản lý thuê cho một nhà hàng khác",
+          ],
+          correct: 2,
+          note: "Julie chọn một lĩnh vực hoàn toàn xa lạ — lịch chiêm tinh — và dần trở thành người dẫn đầu thị trường khác biệt này.",
+        },
+        {
+          situation:
+            "Shannon Mattern phát hiện việc tự thiết kế website cho từng khách hàng tốn quá nhiều thời gian khi cô vẫn đang đi làm IT toàn thời gian. Cô đã giải quyết mâu thuẫn thời gian này bằng cách nào?",
+          options: [
+            "Thuê thêm người để cùng nhận thiết kế web với mình",
+            "Tăng giá dịch vụ thiết kế web lên rất cao để bù lại thời gian",
+            "Thay vì tự thiết kế web cho khách, cô chuyển sang dạy người khác cách tự làm điều đó trên Wordpress",
+            "Ngừng nhận khách hàng mới, chỉ giữ vài khách quen lâu năm",
+          ],
+          correct: 2,
+          note: "Việc dạy người khác tự làm thay vì làm thuê cho từng người giúp Shannon mở rộng quy mô mà không bị giới hạn bởi thời gian cá nhân.",
+        },
+        {
+          situation:
+            "Vấn đề của Julia Kelly: lương vẽ biếm họa tại công viên giải trí chỉ là mức tối thiểu, và công việc này lại kết thúc khi hè qua. Cô muốn tiếp tục vẽ và kiếm thêm tiền — cô đã làm gì?",
+          options: [
+            "Quay lại công viên giải trí vào mỗi mùa hè để duy trì thu nhập ổn định",
+            "Viết thư mời chào trực tiếp đến các trường học để tự nhận vẽ tại sự kiện của họ, sau đó học vẽ kỹ thuật số trên máy tính bảng để tính giá cao hơn nhiều",
+            "Bỏ nghề vẽ biếm họa, chuyển hẳn sang làm thiết kế đồ họa toàn thời gian",
+            "Hạ giá để cạnh tranh với các họa sĩ tự do khác trong vùng",
+          ],
+          correct: 1,
+          note: "Từ 8 đô-la/giờ ở công viên, Julia tăng lên 100 rồi 250 đô-la/giờ nhờ tự tìm khách hàng và nâng cấp công cụ vẽ.",
+        },
+        {
+          situation:
+            "Nick có một món nợ 2.500 đô-la khiến anh bận tâm, không quá lớn nhưng muốn dứt điểm nhanh. Anh đã chọn cách nào để giải quyết?",
+          options: [
+            "Vay thêm tiền để đầu tư một dự án lớn nhằm trả nợ nhanh hơn",
+            "Bán lại các trò chơi điện tử kinh điển",
+            "Làm thêm giờ tại công việc chính của mình",
+            "Bán bớt đồ dùng cá nhân không cần thiết trong nhà",
+          ],
+          correct: 1,
+          note: "Chỉ vài tuần sau khi bắt đầu bán lại game cổ điển, Nick đã trả hết nợ.",
+        },
+        {
+          situation:
+            "Sau khi nhiều người ở sân vận động hỏi mua chiếc áo len bóng chày tùy chỉnh của Bob, vợ chồng anh nhận ra có một thị trường thật sự. Nhưng làm sao để sản xuất số lượng lớn mà không tốn quá nhiều công lẫn chi phí?",
+          options: [
+            "Tự tay sản xuất từng chiếc áo len tại nhà để tiết kiệm chi phí",
+            "Thuê ngoài việc sản xuất — nhờ một trợ lý ở Bangladesh sắp xếp đặt hàng từ Trung Quốc — để giữ chi phí thấp",
+            "Hợp tác với một thương hiệu thể thao lớn để họ sản xuất và phân phối",
+            "Chỉ bán cho người quen để tránh rủi ro sản xuất số lượng lớn",
+          ],
+          correct: 1,
+          note: "Outsource sản xuất giúp Bob và Barb tập trung vào marketing và thiết kế — phần việc họ giỏi nhất.",
+        },
+        {
+          situation:
+            "Sau mười năm dạy học, Michael chán ngán với mức giá dịch vụ quá cao ngoài kia và muốn chuyển hướng sang tự làm chủ. Anh đã bắt đầu như thế nào?",
+          options: [
+            "Mở công ty tư vấn tài chính cho người có thu nhập cao",
+            "Xây dựng một công việc làm thêm giúp mọi người giảm đáng kể hóa đơn phải trả, thức dậy 4 giờ sáng mỗi ngày để làm trước giờ lên lớp",
+            "Dạy thêm các môn học khác để tăng thu nhập từ chính nghề giáo viên",
+            "Đầu tư vào bất động sản để có thu nhập thụ động",
+          ],
+          correct: 1,
+          note: "Sau một năm kiên trì làm vào sáng sớm, dự án phát triển đủ để Michael nghỉ dạy và kinh doanh độc lập.",
+        },
+        {
+          situation:
+            "Các dự án nhỏ đầu tiên của Parker McDonald trên Fiverr chỉ đem lại tiền công tối thiểu. Điều gì đã thực sự thay đổi cuộc chơi của anh?",
+          options: [
+            "Anh quyết định tăng giá các dịch vụ chỉnh sửa văn bản nhỏ trên Fiverr",
+            "Một khách hàng nước ngoài thuê anh — nhờ giọng tiếng Anh bản xứ — làm video thuyết minh cho việc kinh doanh nhỏ của ông; video thành công, khách giới thiệu thêm người khác với công xá cao hơn",
+            "Anh rời Fiverr để tự mở một trang web bán dịch vụ riêng",
+            "Anh hợp tác với một studio âm thanh chuyên nghiệp để nhận khách lớn hơn",
+          ],
+          correct: 1,
+          note: "Từ một chiếc micro 100 đô-la, công việc thuyết minh đem về cho Parker 8.000 đô-la trong năm đầu tiên.",
+        },
+        {
+          situation:
+            "Trên Pinterest, Gabby không biết chắc kiểu pin nào sẽ thu hút người xem nhất giữa vô số lựa chọn nội dung. Cô đã xử lý sự không chắc chắn này ra sao?",
+          options: [
+            "Sao chép chiến lược của những người có lượng theo dõi lớn nhất trên Pinterest",
+            "Đăng thử nhiều hướng đi khác nhau, theo dõi ngay trong vòng một giờ để biết pin nào thành công, từ đó dần thành thạo việc phán đoán nội dung hiệu quả",
+            "Chỉ đăng vào một giờ cố định mỗi ngày để tạo thói quen cho người theo dõi",
+            "Thuê một chuyên gia marketing để lên kế hoạch nội dung thay mình",
+          ],
+          correct: 1,
+          note: "Thử nghiệm liên tục và phản hồi nhanh giúp Gabby phát triển hơn 1 triệu người theo dõi.",
+        },
+        {
+          situation:
+            "Mỗi khi cần định giá một sản phẩm mới, Danielle — một doanh nhân khởi nghiệp giàu kinh nghiệm — không dùng một công thức cố định. Cô dựa vào điều gì để chốt mức giá cuối cùng?",
+          options: [
+            "Luôn áp dụng đúng công thức chi phí cộng thêm một mức lợi nhuận cố định",
+            "Khảo sát giá của toàn bộ đối thủ cạnh tranh trước khi quyết định",
+            'Tập trung vào "cảm giác" của bản thân về một con số cụ thể — một trực giác được tích lũy qua nhiều năm kinh nghiệm khởi nghiệp thực tế',
+            "Để khách hàng tự đề xuất mức giá họ muốn trả",
+          ],
+          correct: 2,
+          note: "Cảm giác của Danielle không phải ngẫu nhiên — nó được củng cố bởi kinh nghiệm quản lý nhiều công ty thành công.",
+        },
+        {
+          situation:
+            'Sara Everett — vừa là quản lý dự án xây dựng vừa là nghệ sĩ — thấy khu vực chung của các tòa nhà mới luôn treo những bức tranh trang trí chán phèo, trong khi chủ công trình lại nghĩ nghệ thuật "đích thực" luôn rất đắt đỏ. Cô đã xử lý cơ hội này thế nào?',
+          options: [
+            "Tự vẽ tranh và bán trực tiếp cho các chủ công trình",
+            "Làm bà mối kết nối các nghệ sĩ địa phương cô biết với chủ công trình, mang nghệ thuật sáng tạo vào với mức giá nằm trong ngân sách dự án",
+            "Thuyết phục các chủ công trình mua tranh từ bảo tàng địa phương",
+            "Mở một cửa hàng tranh nhỏ gần các công trình đang xây",
+          ],
+          correct: 1,
+          note: "Không ai khác am hiểu cả hai thế giới (bất động sản và nghệ sĩ địa phương) như Sara — đó chính là lợi thế của cô.",
+        },
+        {
+          situation:
+            'Trevor Mountcastle ban đầu chỉ mua thẻ quà tặng và đồ điện tử để bán lại với giá tương đương, nhằm bù chi phí cho thói quen "săn" điểm khách hàng và dặm bay. Nhưng dần dà, dự án này đã được anh phát triển thành điều gì?',
+          options: [
+            "Anh nghỉ việc nhà nước để mở một công ty bán lẻ điện tử lớn",
+            "Anh nhận ra mình có thể mua thấp – bán cao một cách có hệ thống, mở rộng quy mô bằng cách mua hàng theo lô và gửi qua kho Amazon để bán lại, dần đem về hơn 100.000 đô-la mỗi năm",
+            "Anh chuyển hẳn sang chuyên tư vấn cho người khác về cách tích điểm bay",
+            "Anh dừng việc mua bán ngay khi đã đủ điểm bay cho cả gia đình",
+          ],
+          correct: 1,
+          note: "Trevor không phải chuyên gia về sản phẩm anh bán — anh là chuyên gia trong việc mua đi bán lại và khai thác sự chênh lệch giá.",
+        },
+        {
+          situation:
+            'Meredith Floyd-Preston, giáo viên Waldorf, dùng "bộ lọc làm thêm" để so sánh giữa hai ý tưởng: huấn luyện cá nhân trực tiếp cho đồng nghiệp, hoặc làm bộ tài liệu hướng dẫn chương trình học để bán. Cô đã chọn ý tưởng nào, và vì sao?',
+          options: [
+            "Chọn huấn luyện cá nhân, vì cô tự tin nhất vào kỹ năng giảng dạy trực tiếp",
+            "Chọn triển khai cả hai ý tưởng song song ngay từ đầu",
+            "Chọn bộ tài liệu hướng dẫn chương trình học, vì có thể bán cho bất kỳ ai trực tuyến, sinh lời cao hơn và tốn ít thời gian duy trì hơn nhiều so với huấn luyện trực tiếp",
+            "Chọn huấn luyện cá nhân, vì đồng nghiệp sẵn sàng trả giá cao hơn",
+          ],
+          correct: 2,
+          note: 'Huấn luyện trực tiếp bị giới hạn bởi thời gian và khó "hét giá" với đồng nghiệp; tài liệu bán trực tuyến không có những hạn chế đó.',
+        },
+        {
+          situation:
+            "Amanda muốn xây dựng một lượng người theo dõi quan tâm đến chế độ ăn ít carb, và cần một lời mời chào tạo ra thu nhập đều đặn chứ không chỉ một lần. Cô đã đưa ra lời mời chào nào?",
+          options: [
+            "Bán một cuốn ebook tổng hợp công thức ăn kiêng, thu tiền một lần",
+            '"Tôi sẽ gửi cho bạn các công thức keto-paleo yêu thích của tôi mỗi tuần. Chỉ mười carb hoặc ít hơn!" — một lời mời chào định kỳ, lặp lại',
+            "Mở một nhà hàng nhỏ chuyên phục vụ món ăn keto-paleo",
+            "Hợp tác với một bác sĩ dinh dưỡng để chứng thực các công thức",
+          ],
+          correct: 1,
+          note: "Lời mời chào định kỳ (mỗi tuần) tạo ra một mối quan hệ và nguồn thu liên tục, thay vì chỉ bán một lần.",
+        },
+      ];
+
+      let current = 0,
+        score = 0,
+        answered = false;
+      const letters = ["A", "B", "C", "D"];
+
+      const situationEl = document.getElementById("situation");
+      const optionsEl = document.getElementById("options");
+      const feedbackEl = document.getElementById("feedback");
+      const nextBtn = document.getElementById("nextBtn");
+      const qnumEl = document.getElementById("qnum");
+      const progressFill = document.getElementById("progressFill");
+      const progressLabel = document.getElementById("progressLabel");
+      const treeScoreEl = document.getElementById("treeScore");
+      const leafGroup = document.getElementById("leafGroup");
+      const coinGroup = document.getElementById("coinGroup");
+
+      // 20 organic-ish positions across the canopy for leaves/coins
+      const positions = [
+        [95, 58],
+        [108, 42],
+        [122, 32],
+        [138, 24],
+        [150, 18],
+        [163, 24],
+        [178, 32],
+        [193, 42],
+        [206, 52],
+        [88, 68],
+        [100, 80],
+        [210, 64],
+        [198, 76],
+        [125, 50],
+        [148, 40],
+        [172, 48],
+        [160, 60],
+        [135, 66],
+        [182, 60],
+        [150, 52],
+      ];
+
+      function initFoliage() {
+        positions.forEach((p) => {
+          const c = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "circle",
+          );
+          c.setAttribute("cx", p[0]);
+          c.setAttribute("cy", p[1]);
+          c.setAttribute("r", 9);
+          c.setAttribute("class", "leaf");
+          leafGroup.appendChild(c);
+        });
+      }
+      initFoliage();
+
+      function addCoin(idx) {
+        const p = positions[idx];
+        const c = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "circle",
+        );
+        c.setAttribute("cx", p[0]);
+        c.setAttribute("cy", p[1]);
+        c.setAttribute("r", 6.5);
+        c.setAttribute("fill", "#d8b15c");
+        c.setAttribute("stroke", "#8a6a2e");
+        c.setAttribute("stroke-width", "1");
+        c.setAttribute("class", "coin");
+        c.style.opacity = 0;
+        c.style.transform = "scale(0.3)";
+        c.style.transformOrigin = `${p[0]}px ${p[1]}px`;
+        coinGroup.appendChild(c);
+        requestAnimationFrame(() => {
+          c.style.opacity = 1;
+          c.style.transform = "scale(1)";
+        });
+      }
+
+      function renderQuestion() {
+        answered = false;
+        const q = questions[current];
+        qnumEl.textContent = `Tình huống ${current + 1}`;
+        situationEl.textContent = q.situation;
+        optionsEl.innerHTML = "";
+        q.options.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.className = "opt";
+          btn.innerHTML = `<span class="letter">${letters[i]}</span><span>${opt}</span>`;
+          btn.onclick = () => selectOption(i, btn);
+          optionsEl.appendChild(btn);
+        });
+        feedbackEl.className = "feedback";
+        feedbackEl.textContent = "";
+        nextBtn.className = "nextBtn";
+        progressFill.style.width = `${(current / questions.length) * 100}%`;
+        progressLabel.textContent = `${current + 1}/${questions.length}`;
+      }
+
+      function selectOption(i, btn) {
+        if (answered) return;
+        answered = true;
+        const q = questions[current];
+        const allBtns = optionsEl.querySelectorAll(".opt");
+        allBtns.forEach((b) => (b.disabled = true));
+
+        if (i === q.correct) {
+          btn.classList.add("correct");
+          score++;
+          addCoin(current);
+          feedbackEl.className = "feedback show good";
+          feedbackEl.textContent = `Đúng rồi! ${q.note}`;
+        } else {
+          btn.classList.add("wrong");
+          allBtns[q.correct].classList.add("correct");
+          feedbackEl.className = "feedback show bad";
+          feedbackEl.textContent = `Chưa đúng. ${q.note}`;
+        }
+        treeScoreEl.textContent = `${score}/${questions.length}`;
+        nextBtn.className = "nextBtn show";
+        progressFill.style.width = `${((current + 1) / questions.length) * 100}%`;
+      }
+
+      nextBtn.onclick = () => {
+        current++;
+        if (current >= questions.length) {
+          showResult();
+        } else {
+          renderQuestion();
+        }
+      };
+
+      function showResult() {
+        document.getElementById("quizArea").className = "quizArea hide";
+        const result = document.getElementById("result");
+        result.className = "result show";
+        document.getElementById("resultScore").textContent =
+          `${score}/${questions.length}`;
+
+        let tier, desc;
+        if (score >= 18) {
+          tier = "Bậc thầy hái ra tiền 🌳";
+          desc =
+            "Bạn nắm chắc gần hết các ví dụ trong sách — sẵn sàng dẫn dắt phần thảo luận về tính nhất quán giữa các case study và nguyên lý '30 phút mỗi ngày' rồi.";
+        } else if (score >= 13) {
+          tier = "Người làm thêm dày dạn";
+          desc =
+            "Bạn nhớ tốt phần lớn câu chuyện chính. Xem lại vài ví dụ bị nhầm để củng cố trước khi trình bày.";
+        } else if (score >= 7) {
+          tier = "Hạt giống mới gieo";
+          desc =
+            "Bạn đã nắm được khung sườn, nhưng nên đọc lại các ví dụ ở từng 'Ngày' để phân biệt rõ từng nhân vật.";
+        } else {
+          tier = "Mới ra vườn";
+          desc =
+            "Thử đọc lại nhanh các 'Ngày' chính rồi làm lại quiz — các tình huống sẽ dễ phân biệt hơn lần hai.";
+        }
+        document.getElementById("resultTier").textContent = tier;
+        document.getElementById("resultDesc").textContent = desc;
+
+        // --- Tiên đoán vui: nghề tay trái tương lai kiếm được bao nhiêu tỉ ---
+        let min, max, fortuneNote;
+        if (score >= 18) {
+          min = 5;
+          max = 15;
+          fortuneNote =
+            "Điểm cao cỡ này, bạn xứng đáng là người mở đầu buổi thuyết trình về sách!";
+        } else if (score >= 13) {
+          min = 1;
+          max = 5;
+          fortuneNote =
+            "Gần đạt mức 'Sarah Hannington' rồi — chỉ cần một chiếc máy làm kẹo... ý là một dự án đúng hướng.";
+        } else if (score >= 7) {
+          min = 0.1;
+          max = 1;
+          fortuneNote =
+            "Hạt giống đã gieo — đọc lại vài 'Ngày' trong sách, số tỉ sẽ tăng nhanh hơn bạn nghĩ.";
+        } else {
+          min = 0.01;
+          max = 0.1;
+          fortuneNote =
+            "Con số còn khiêm tốn, nhưng nhớ: Tim Aton cũng mất hơn một năm mới tìm ra hướng đúng.";
+        }
+        const amount = min + Math.random() * (max - min);
+        const amountText =
+          amount >= 1
+            ? `${amount.toFixed(1)} tỉ`
+            : `${Math.round(amount * 1000)} triệu`;
+        document.getElementById("fortuneAmount").textContent = amountText;
+        document.getElementById("fortuneNote").textContent =
+          `${fortuneNote} (Dự đoán cho vui, không phải lời khuyên tài chính 😄)`;
+      }
+
+      document.getElementById("restartBtn").onclick = () => {
+        current = 0;
+        score = 0;
+        treeScoreEl.textContent = `0/${questions.length}`;
+        coinGroup.innerHTML = "";
+        document.getElementById("result").className = "result";
+        document.getElementById("quizArea").className = "quizArea";
+        renderQuestion();
+      };
+
+      renderQuestion();
+    </script>
+  </body>
+</html>
